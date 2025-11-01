@@ -513,37 +513,37 @@ If you'd like to book a lesson or have any questions, please feel free to get in
   });
   </script>
 
-  <!-- =======================
-       FACEBOOK MESSENGER CHAT BUBBLE
-       (place just before </body>)
-  ======================== -->
-  <div id="fb-root"></div>
-  <div id="fb-customer-chat" class="fb-customerchat"></div>
-  <script>
-    // Set your Page ID
-    var chatbox = document.getElementById('fb-customer-chat');
-    chatbox.setAttribute("page_id", "100003142726087");
-    chatbox.setAttribute("attribution", "biz_inbox");
+<!-- Messenger Chat plugin -->
+<div id="fb-root"></div>
 
-    // Optional UI
-    chatbox.setAttribute("theme_color", "#0084FF");
-    chatbox.setAttribute("greeting_dialog_display", "fade");
-    chatbox.setAttribute("greeting_dialog_delay", "2");
-    chatbox.setAttribute("logged_in_greeting", "Hi! 👋 How can I help?");
-    chatbox.setAttribute("logged_out_greeting", "Hi! 👋 How can I help?");
-  </script>
-  <script>
-    window.fbAsyncInit = function() {
-      FB.init({ xfbml: true, version: 'v20.0' });
-    };
-    (function(d, s, id){
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = "https://connect.facebook.net/en_GB/sdk/xfbml.customerchat.js";
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-  </script>
+<!-- Your Chat Plugin code -->
+<div id="fb-customer-chat" class="fb-customerchat"></div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    var chatbox = document.getElementById('fb-customer-chat');
+    chatbox.setAttribute("page_id", "100094466451832");   // Your Facebook Page ID
+    chatbox.setAttribute("attribution", "biz_inbox");
+    chatbox.setAttribute("logged_in_greeting", "Hi! How can I help?");
+    chatbox.setAttribute("logged_out_greeting", "Hi! How can I help?");
+  });
+
+  window.fbAsyncInit = function() {
+    FB.init({
+      xfbml: true,
+      version: 'v20.0'  // Keep this updated if Facebook releases a new SDK
+    });
+  };
+
+  (function(d, s, id){
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "https://connect.facebook.net/en_GB/sdk/xfbml.customerchat.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+</script>
 
 </body>
 </html>
+
