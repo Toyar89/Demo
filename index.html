@@ -410,6 +410,9 @@ If you'd like to book a lesson or have any questions, please feel free to get in
     const yearEl = document.getElementById('year');
     if (yearEl) yearEl.textContent = new Date().getFullYear();
 
+    // Guard: on fresh load without a hash, make sure we start at the top (helps some mobile browsers)
+    if (!location.hash) { setTimeout(() => { window.scrollTo(0, 0); }, 0); }
+
     function scrollToSection(id){
       const el = document.getElementById(id); if(!el) return;
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -513,37 +516,34 @@ If you'd like to book a lesson or have any questions, please feel free to get in
   });
   </script>
 
-<!-- Messenger Chat plugin -->
-<div id="fb-root"></div>
+  <!-- Messenger Chat plugin -->
+  <div id="fb-root"></div>
+  <div id="fb-customer-chat" class="fb-customerchat"></div>
 
-<!-- Your Chat Plugin code -->
-<div id="fb-customer-chat" class="fb-customerchat"></div>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function(){
-    var chatbox = document.getElementById('fb-customer-chat');
-    chatbox.setAttribute("page_id", "100094466451832");   // Your Facebook Page ID
-    chatbox.setAttribute("attribution", "biz_inbox");
-    chatbox.setAttribute("logged_in_greeting", "Hi! How can I help?");
-    chatbox.setAttribute("logged_out_greeting", "Hi! How can I help?");
-  });
-
-  window.fbAsyncInit = function() {
-    FB.init({
-      xfbml: true,
-      version: 'v20.0'  // Keep this updated if Facebook releases a new SDK
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      var chatbox = document.getElementById('fb-customer-chat');
+      chatbox.setAttribute("page_id", "100094466451832");   // Your Facebook Page ID
+      chatbox.setAttribute("attribution", "biz_inbox");
+      chatbox.setAttribute("logged_in_greeting", "Hi! How can I help?");
+      chatbox.setAttribute("logged_out_greeting", "Hi! How can I help?");
     });
-  };
 
-  (function(d, s, id){
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s); js.id = id;
-    js.src = "https://connect.facebook.net/en_GB/sdk/xfbml.customerchat.js";
-    fjs.parentNode.insertBefore(js, fjs);
-  }(document, 'script', 'facebook-jssdk'));
-</script>
+    window.fbAsyncInit = function() {
+      FB.init({
+        xfbml: true,
+        version: 'v20.0'
+      });
+    };
+
+    (function(d, s, id){
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "https://connect.facebook.net/en_GB/sdk/xfbml.customerchat.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+  </script>
 
 </body>
 </html>
-
