@@ -23,13 +23,21 @@
   ========================================================== -->
   <style>
   :root{
+    /* Will be updated at runtime to the REAL header height on each device */
     --nav-h: 72px;
+
+    /* Theme */
     --nav-bg:#0071DF; --nav-text:#ffffff; --nav-hover:#e43d30;
     --bg:#ffffff; --ink:#0e1116; --muted:#606978; --line:#e9eef3;
     --accent:#e43d30; --accent-2:#22a06b;
+
     --maxw:1120px; --radius:16px; --gap:clamp(.8rem, 2.4vw, 1.25rem);
+
+    /* Default anchor offset (refined further below per-breakpoint) */
     scroll-padding-top: var(--nav-h);
   }
+
+  /* Base */
   body{font-family:"Inter",system-ui,-apple-system,Segoe UI,Arial,sans-serif;font-weight:400;color:var(--ink);line-height:1.6;margin:0;background:var(--bg);padding-top:var(--nav-h)}
   h1,h2,h3,h4,h5,h6{font-weight:800;color:var(--ink);line-height:1.2;margin-top:0}
   h1{font-size:clamp(2rem,5vw,3rem)} h2{font-size:clamp(1.8rem,4vw,2.4rem);margin-bottom:.75rem} h3{font-size:1.4rem;font-weight:700;margin-bottom:.5rem}
@@ -40,6 +48,7 @@
   img{max-width:100%;height:auto;display:block;object-fit:cover}
   .container{max-width:var(--maxw);margin-inline:auto;padding-inline:clamp(1rem,4vw,2rem)}
 
+  /* Buttons */
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.9rem 1.25rem;border-radius:9999px;border:1px solid transparent;font-weight:800;letter-spacing:.3px;transition:filter .2s,background-color .2s,color .2s;line-height:1}
   .btn--primary{background:var(--accent);color:#fff}.btn--primary:hover,.btn--primary:focus-visible{filter:brightness(.95);color:#fff}
   .btn--wa{background:var(--accent-2);color:#fff !important}.btn--wa:hover,.btn--wa:focus-visible{filter:brightness(.93);color:#fff !important}
@@ -47,13 +56,26 @@
   .cta{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:flex-start}
   @media (max-width:640px){.cta{justify-content:center}.about .cta{justify-content:flex-start}}
 
+  /* Base anchor offset for most sections */
   section[id],[id]{scroll-margin-top:calc(var(--nav-h) + 8px)}
   #mycar,#reviews,#contact,#about{scroll-margin-top:calc(var(--nav-h) + 40px)}
+
+  /* Desktop: headings/buttons are bigger; land a bit higher */
   @media (min-width:1024px){
     #about,#mycar,#pricing,#reviews,#contact{scroll-margin-top:calc(var(--nav-h) - 50px)}
   }
+
+  /* Mobile-specific anchor fix:
+     give extra breathing room so nothing ends up hidden under the sticky header */
+  @media (max-width:900px){
+    section[id],[id]{scroll-margin-top:calc(var(--nav-h) + 80px) !important}
+    #reviews,#mycar,#contact{scroll-margin-top:calc(var(--nav-h) + 100px) !important}
+  }
+
+  /* Remove old pseudo-element hack if it sneaks back */
   #mycar::before,#reviews::before,#contact::before,#about::before{content:none !important;display:none !important}
 
+  /* Fixed Navbar */
   .topbar{position:fixed;top:0;left:0;width:100%;z-index:9999;height:var(--nav-h);background:var(--nav-bg);border-bottom:1px solid transparent;display:flex;align-items:center;box-shadow:0 2px 10px rgba(0,0,0,.15)}
   .nav{display:flex;align-items:center;gap:1rem;width:100%;padding:.4rem 0}
   .brand{display:flex;align-items:center;gap:.6rem;font-weight:800}
@@ -64,6 +86,7 @@
   .menu a:hover{background:var(--nav-hover);color:#fff}
   .hamburger{display:none}
   .drawer{display:none !important}.drawer.open{display:block !important}
+
   @media (max-width:900px){
     .menu{display:none}
     .topbar .container{padding-inline:clamp(1rem,6vw,2rem)}
@@ -74,6 +97,7 @@
     .drawer a:last-child{border-bottom:0}
   }
 
+  /* Hero */
   .hero{padding-top:1rem}
   .hero-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(2rem,6vw,5rem);align-items:center;padding-block:clamp(1.2rem,5vw,2.2rem)}
   @media (max-width:1200px){.hero-grid{gap:clamp(1.5rem,5vw,3.75rem)}}
@@ -87,6 +111,7 @@
   .hero-art{padding:0;border:none;background:transparent;display:flex;align-items:center;justify-content:center}
   .hero-art img{width:100%;max-width:560px;height:auto;object-fit:contain;aspect-ratio:1160/695}
 
+  /* About */
   .about{padding-block:clamp(2rem,7vw,4rem);color:var(--ink)}
   .split{display:grid;grid-template-columns:1.1fr 1fr;gap:var(--gap);align-items:stretch;min-height:600px}
   .about .btn{margin-top:.5rem}
@@ -96,6 +121,7 @@
   @keyframes fadeInUp{to{opacity:1;transform:translateY(0)}}
   @media (max-width:980px){.split{grid-template-columns:1fr;text-align:center;min-height:auto}.about .card{margin-top:1rem}.about .card img.main-img{max-height:none}}
 
+  /* Pricing */
   .pricing{padding-block:clamp(2rem,7vw,4rem);border-top:1px solid var(--line);text-align:center}
   .plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,360px));gap:var(--gap);justify-content:center}
   .plan{border:1px solid var(--line);border-radius:14px;background:#fff;padding:1.25rem;text-align:center}
@@ -103,6 +129,7 @@
   .plan ul{list-style:none;margin:.4rem auto 1rem;padding:0;text-align:center;color:var(--muted)}
   .plan .btn{display:inline-flex;margin-inline:auto;margin-top:.25rem}
 
+  /* Reviews */
   .reviews{padding-block:clamp(2rem,7vw,4rem);border-top:1px solid var(--line);background:#fafbfd}
   .reviews-head{display:flex;align-items:baseline;gap:1rem;flex-wrap:wrap;margin-bottom:.25rem}
   .reviews-sub{font-weight:400;font-size:.95rem;color:var(--muted);line-height:1.35}
@@ -119,7 +146,10 @@
   .rev-page-info{color:var(--muted);font-weight:600}
   @media (max-width:1000px){.review-card{grid-column:span 6}}
   @media (max-width:640px){.review-card{grid-column:1/-1}}
+  /* (Optional) Tiny mobile spacing bump for pagers */
+  @media (max-width:640px){ .rev-pager, .car-pager { margin-top: 1.25rem; } }
 
+  /* My Car */
   .mycar{padding-block:clamp(2rem,7vw,4rem);border-top:1px solid var(--line);background:#fff}
   .car-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--gap);margin-top:.75rem}
   .car-spec-intro{font-weight:800;font-size:1.05rem;color:var(--ink);margin:.25rem 0 .4rem}
@@ -130,17 +160,22 @@
   @media (max-width:640px){.car-card{grid-column:1/-1}}
   .car-pager{display:flex;align-items:center;justify-content:center;gap:1rem;margin:1rem 0 2.25rem}
 
+  /* Contact */
   .contact{padding-block:clamp(2rem,7vw,4rem);border-top:1px solid var(--line)}
   .contact .grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
   .contact .box{border:1px solid var(--line);border-radius:14px;background:#fff;padding:1rem}
   .field{width:100%;padding:.85rem 1rem;border-radius:12px;border:1px solid var(--line)}
+
+  /* Make sure the last section has room for big buttons on desktop */
   #contact{padding-bottom:clamp(4rem,8vw,6rem)!important}
   #reviews{padding-bottom:clamp(4rem,8vw,6rem)}
   #mycar{padding-bottom:clamp(4rem,8vw,6rem)}
   #contact form.box{padding-bottom:1.25rem}
   #contact form.box .btn{margin-bottom:.25rem}
+
   @media (max-width:900px){.contact .grid{grid-template-columns:1fr}}
 
+  /* Footer */
   footer{background:#0f172a;color:#e5e7eb;padding:1.2rem 0;text-align:center}
   footer a{color:#fff}
   .footer-inner{display:flex;align-items:center;justify-content:space-between;gap:1rem;max-width:var(--maxw);margin:0 auto;padding-inline:clamp(1rem,4vw,2rem)}
@@ -153,6 +188,7 @@
   .footer-credit{font-size:.9rem;opacity:.9;white-space:nowrap}
   @media (max-width:640px){.footer-inner{flex-direction:column;text-align:center;gap:.5rem}.footer-credit{white-space:normal}}
 
+  /* Extra-tight phones */
   @media (max-width:420px){
     :root{--gap:.8rem}
     .topbar .container{padding-inline:1rem}
@@ -394,6 +430,7 @@ If you'd like to book a lesson or have any questions, please feel free to get in
   ========================================================== -->
   <script>
   document.addEventListener('DOMContentLoaded', () => {
+    /* ========= Mobile/desktop nav: open/close the drawer ========= */
     const btn = document.getElementById('hamburger');
     const drawer = document.getElementById('drawer');
     if (btn && drawer) {
@@ -407,17 +444,29 @@ If you'd like to book a lesson or have any questions, please feel free to get in
       });
     }
 
+    /* ========= Year in footer ========= */
     const yearEl = document.getElementById('year');
     if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-    // Guard: on fresh load without a hash, make sure we start at the top (helps some mobile browsers)
-    if (!location.hash) { setTimeout(() => { window.scrollTo(0, 0); }, 0); }
+    /* ========= On a fresh load with no hash, force start at the top
+       Some mobile browsers restore a weird scroll position. ========= */
+    (function () {
+      try {
+        const navEntry = performance.getEntriesByType('navigation')[0];
+        const isFresh = !navEntry || navEntry.type === 'navigate'; // Safari-safe
+        if (isFresh && !location.hash) setTimeout(() => window.scrollTo(0, 0), 0);
+      } catch (e) {
+        if (!location.hash) setTimeout(() => window.scrollTo(0, 0), 0);
+      }
+    })();
 
+    /* ========= Helper: smooth scroll to a section by id ========= */
     function scrollToSection(id){
       const el = document.getElementById(id); if(!el) return;
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    /* ========= REVIEWS: simple client-side pager ========= */
     const REVIEWS = [
       { name: "Tracy Beglin - September 2025",
         text: "Gary is an excellent instructor. I was so nervous as I had never driven a car before and was a complete beginner. Gary was really patient and didnt make me do anything I wasn't comfortable with. He explained everything well so that I would remember it.",
@@ -473,6 +522,7 @@ If you'd like to book a lesson or have any questions, please feel free to get in
       render();
     })();
 
+    /* ========= Car photos pager ========= */
     const CAR_PHOTOS = [
       { src: "images/car-1.png", alt:"Gary's car 1" },
       { src: "images/car-2.png", alt:"Gary's car 2" },
@@ -514,26 +564,40 @@ If you'd like to book a lesson or have any questions, please feel free to get in
       render();
     })();
   });
+
+  /* ========= RUNTIME LAYOUT FIXES (affects mobile the most) ========= */
+
+  // 1) Set CSS --nav-h to the *actual* header height for this device.
+  (function () {
+    const setNavHeight = () => {
+      const nav = document.querySelector('.topbar');
+      if (!nav) return;
+      const h = nav.getBoundingClientRect().height;
+      document.documentElement.style.setProperty('--nav-h', `${Math.round(h)}px`);
+    };
+    setNavHeight();
+    window.addEventListener('load', setNavHeight, { once: true });
+    window.addEventListener('resize', setNavHeight);
+    window.addEventListener('orientationchange', () => setTimeout(setNavHeight, 50));
+  })();
   </script>
 
-  <!-- Messenger Chat plugin -->
+  <!-- =============== Facebook Messenger Chat plugin =============== -->
   <div id="fb-root"></div>
   <div id="fb-customer-chat" class="fb-customerchat"></div>
 
   <script>
+    // Configure the chat box (replace page_id when you switch to Gary's page)
     document.addEventListener('DOMContentLoaded', function(){
       var chatbox = document.getElementById('fb-customer-chat');
-      chatbox.setAttribute("page_id", "100094466451832");   // Your Facebook Page ID
+      chatbox.setAttribute("page_id", "100094466451832");   // Your current test Page ID
       chatbox.setAttribute("attribution", "biz_inbox");
       chatbox.setAttribute("logged_in_greeting", "Hi! How can I help?");
       chatbox.setAttribute("logged_out_greeting", "Hi! How can I help?");
     });
 
     window.fbAsyncInit = function() {
-      FB.init({
-        xfbml: true,
-        version: 'v20.0'
-      });
+      FB.init({ xfbml: true, version: 'v20.0' });
     };
 
     (function(d, s, id){
