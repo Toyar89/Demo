@@ -65,12 +65,36 @@
     #about,#mycar,#pricing,#reviews,#contact{scroll-margin-top:calc(var(--nav-h) - 50px)}
   }
 
-  /* Mobile-specific anchor fix:
-     give extra breathing room so nothing ends up hidden under the sticky header */
+  /* =========================================================
+     MOBILE: global landing spacing for all sections
+     (keeps section titles nicely below the sticky header)
+     Adjust the +16px value if you want a touch more/less gap.
+  ========================================================== */
   @media (max-width:900px){
-    section[id],[id]{scroll-margin-top:calc(var(--nav-h) + 80px) !important}
-    #reviews,#mycar,#contact{scroll-margin-top:calc(var(--nav-h) + 100px) !important}
+    #home,#about,#mycar,#pricing,#reviews,#contact{
+      scroll-margin-top: calc(var(--nav-h) + 16px) !important;
+    }
+    /* tighten top padding slightly for a cleaner mobile look */
+    .hero,.about,.mycar,.pricing,.reviews,.contact{
+      padding-top: 1rem !important;
+    }
   }
+
+  /* Optional tiny desktop nudge */
+  @media (min-width:901px){
+    #home,#about,#mycar,#pricing,#reviews,#contact{
+      scroll-margin-top: calc(var(--nav-h) - 10px);
+    }
+  }
+
+  /* 🔧 CUSTOM PER-SECTION OVERRIDES – EDIT HERE
+     (uncomment/change values to fine-tune just one section on mobile)
+     Example:
+     @media (max-width:900px){
+       #mycar   { scroll-margin-top: calc(var(--nav-h) + 8px) !important; }
+       #reviews { scroll-margin-top: calc(var(--nav-h) + 24px) !important; }
+     }
+  */
 
   /* Remove old pseudo-element hack if it sneaks back */
   #mycar::before,#reviews::before,#contact::before,#about::before{content:none !important;display:none !important}
@@ -146,7 +170,6 @@
   .rev-page-info{color:var(--muted);font-weight:600}
   @media (max-width:1000px){.review-card{grid-column:span 6}}
   @media (max-width:640px){.review-card{grid-column:1/-1}}
-  /* (Optional) Tiny mobile spacing bump for pagers */
   @media (max-width:640px){ .rev-pager, .car-pager { margin-top: 1.25rem; } }
 
   /* My Car */
@@ -448,8 +471,7 @@ If you'd like to book a lesson or have any questions, please feel free to get in
     const yearEl = document.getElementById('year');
     if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-    /* ========= On a fresh load with no hash, force start at the top
-       Some mobile browsers restore a weird scroll position. ========= */
+    /* ========= On a fresh load with no hash, force start at the top ========= */
     (function () {
       try {
         const navEntry = performance.getEntriesByType('navigation')[0];
