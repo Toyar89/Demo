@@ -185,28 +185,7 @@
     .contact .grid{grid-template-columns:1fr}
     .footer-inner{padding-inline:1rem}
   }
-    /* === UNIVERSAL SECTION SPACING (pixels) === */
-/* Uses the runtime --nav-h we already calculate in JS */
-
-@media (min-width: 901px) {
-  /* Desktop: neat, close to the blue bar */
-  section[id] {
-    /* Where the page lands when you tap a menu link */
-    scroll-margin-top: calc(var(--nav-h) + 16px) !important;
-
-    /* Extra space inside each section top (content breathing room) */
-    padding-top: 48px !important;   /* was ~3rem */
-  }
-}
-
-@media (max-width: 900px) {
-  /* Mobile: more headroom so titles never hide under the sticky nav */
-  section[id] {
-    scroll-margin-top: calc(var(--nav-h) + 110px) !important;
-    padding-top: 64px !important;   /* was ~4rem */
-  }
-}
-
+  
   </style>
 </head>
 <body>
@@ -579,6 +558,3 @@ If you'd like to book a lesson or have any questions, please feel free to get in
 
 </body>
 </html>
-
-
-
