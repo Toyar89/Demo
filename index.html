@@ -155,7 +155,7 @@
   footer a{color:#fff}
   .footer-inner{display:flex;align-items:center;justify-content:space-between;gap:1rem;max-width:var(--maxw);margin:0 auto;padding-inline:clamp(1rem,4vw,2rem)}
   .footer-social{display:flex;align-items:center;gap:.6rem}
-  .footer-social a{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:999px;transition:transform .2s}
+  .footer-social a{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:9999px;transition:transform .2s}
   .footer-social a:hover{transform:scale(1.1)}
   .footer-social img{width:26px;height:26px;display:block;opacity:.9;transition:opacity .2s}
   .footer-social a:hover img{opacity:1}
@@ -186,6 +186,44 @@
     .footer-inner{padding-inline:1rem}
   }
   
+  /* =========================================================
+     📱 MOBILE-ONLY PER-SECTION SPACING TUNER (pixels)
+     Desktop stays unchanged. Edit the values below per section.
+     -XX-pt = extra padding at the top INSIDE the section
+     -XX-sm = extra space ABOVE when you jump via the menu (anchor landing)
+     ========================================================= */
+  @media (max-width:900px){
+    :root{
+      /* ====== EDIT THESE NUMBERS ====== */
+      --home-pt:    56px;  --home-sm:    110px;
+      --about-pt:   56px;  --about-sm:   110px;
+      --mycar-pt:   56px;  --mycar-sm:   120px;
+      --pricing-pt: 56px;  --pricing-sm: 110px;
+      --reviews-pt: 56px;  --reviews-sm: 120px;
+      --contact-pt: 56px;  --contact-sm: 120px;
+      /* ================================= */
+    }
+    #home    { padding-top:var(--home-pt)    !important; scroll-margin-top:calc(var(--nav-h) + var(--home-sm))    !important; }
+    #about   { padding-top:var(--about-pt)   !important; scroll-margin-top:calc(var(--nav-h) + var(--about-sm))   !important; }
+    #mycar   { padding-top:var(--mycar-pt)   !important; scroll-margin-top:calc(var(--nav-h) + var(--mycar-sm))   !important; }
+    #pricing { padding-top:var(--pricing-pt) !important; scroll-margin-top:calc(var(--nav-h) + var(--pricing-sm)) !important; }
+    #reviews { padding-top:var(--reviews-pt) !important; scroll-margin-top:calc(var(--nav-h) + var(--reviews-sm)) !important; }
+    #contact { padding-top:var(--contact-pt) !important; scroll-margin-top:calc(var(--nav-h) + var(--contact-sm)) !important; }
+  }
+
+  /* 🔧 DEV HELP (optional): show outlines & section IDs on mobile while tuning.
+     Turn ON by removing the '/*' before @media and the '*/' after the block.
+  /*
+  @media (max-width:900px){
+    section[id]{outline:1px dashed rgba(255,0,0,.35)}
+    section[id]::after{
+      content: "#" attr(id);
+      display:inline-block; margin:.25rem 0 0 .25rem;
+      font-weight:800; font-size:12px; padding:2px 6px;
+      background:rgba(255,235,59,.9); border-radius:6px;
+    }
+  }
+  */
   </style>
 </head>
 <body>
@@ -412,6 +450,7 @@ If you'd like to book a lesson or have any questions, please feel free to get in
         const open = drawer.classList.toggle('open');
         btn.setAttribute('aria-expanded', String(open));
       });
+    /* Close drawer on in-page nav */
       drawer.addEventListener('click', (e) => {
         const a = e.target.closest('a[href^="#"]'); if (!a) return;
         drawer.classList.remove('open'); btn.setAttribute('aria-expanded', 'false');
@@ -522,6 +561,22 @@ If you'd like to book a lesson or have any questions, please feel free to get in
       render();
     })();
   });
+  </script>
+
+  <!-- ========= RUNTIME: keep --nav-h accurate on all devices ========= -->
+  <script>
+  (function () {
+    const setNavHeight = () => {
+      const nav = document.querySelector('.topbar');
+      if (!nav) return;
+      const h = Math.round(nav.getBoundingClientRect().height);
+      document.documentElement.style.setProperty('--nav-h', h + 'px');
+    };
+    setNavHeight();
+    window.addEventListener('load', setNavHeight, { once: true });
+    window.addEventListener('resize', setNavHeight);
+    window.addEventListener('orientationchange', () => setTimeout(setNavHeight, 50));
+  })();
   </script>
 
   <!-- =======================
