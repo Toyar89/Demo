@@ -12,7 +12,7 @@
   <meta name="google-site-verification" content="oF7MejKYg6ywgk1t96kETRQJx3tD9HLAY-Nkcz8d1SI">
   <link rel="canonical" href="https://learnwithgary.com/">
   
-   <!-- =======================
+  <!-- =======================
        FAVICONS
   ======================== -->
   <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
@@ -20,7 +20,6 @@
   <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
   <link rel="manifest" href="images/site.webmanifest">
   <meta name="theme-color" content="#ffffff">
-
 
   <!-- =======================
        FONTS
@@ -185,7 +184,19 @@
     .contact .grid{grid-template-columns:1fr}
     .footer-inner{padding-inline:1rem}
   }
-  
+
+  /* ===========================
+     MOBILE ANCHOR SCROLL FIX
+     (Ensures mobile menu links stop with titles visible)
+  =========================== */
+  @media (max-width: 900px) {
+    #home    { scroll-margin-top: 110px; padding-top: 60px; }
+    #about   { scroll-margin-top: 115px; padding-top: 64px; }
+    #mycar   { scroll-margin-top: 125px; padding-top: 68px; }
+    #pricing { scroll-margin-top: 120px; padding-top: 62px; }
+    #reviews { scroll-margin-top: 125px; padding-top: 66px; }
+    #contact { scroll-margin-top: 130px; padding-top: 64px; }
+  }
   </style>
 </head>
 <body>
@@ -524,38 +535,5 @@ If you'd like to book a lesson or have any questions, please feel free to get in
   });
   </script>
 
-  <!-- =======================
-       FACEBOOK MESSENGER CHAT BUBBLE
-       (place just before </body>)
-  ======================== -->
-  <div id="fb-root"></div>
-  <div id="fb-customer-chat" class="fb-customerchat"></div>
-  <script>
-    // Set your Page ID
-    var chatbox = document.getElementById('fb-customer-chat');
-    chatbox.setAttribute("page_id", "100003142726087");
-    chatbox.setAttribute("attribution", "biz_inbox");
-
-    // Optional UI
-    chatbox.setAttribute("theme_color", "#0084FF");
-    chatbox.setAttribute("greeting_dialog_display", "fade");
-    chatbox.setAttribute("greeting_dialog_delay", "2");
-    chatbox.setAttribute("logged_in_greeting", "Hi! 👋 How can I help?");
-    chatbox.setAttribute("logged_out_greeting", "Hi! 👋 How can I help?");
-  </script>
-  <script>
-    window.fbAsyncInit = function() {
-      FB.init({ xfbml: true, version: 'v20.0' });
-    };
-    (function(d, s, id){
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = "https://connect.facebook.net/en_GB/sdk/xfbml.customerchat.js";
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-  </script>
-
 </body>
 </html>
-
