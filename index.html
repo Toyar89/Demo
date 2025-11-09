@@ -197,6 +197,12 @@
     #reviews { scroll-margin-top: 120px; padding-top: 0px; }
     #contact { scroll-margin-top: 130px; padding-top: 64px; }
   }
+    /* Mobile: center the CTA buttons everywhere, including About */
+@media (max-width: 640px){
+  .cta{ justify-content: center !important; }
+  .about .cta{ justify-content: center !important; } /* override the old rule */
+}
+
   </style>
 </head>
 <body>
@@ -537,4 +543,5 @@ If you'd like to book a lesson or have any questions, please feel free to get in
 
 </body>
 </html>
+
 
