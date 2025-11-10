@@ -751,6 +751,109 @@ If you'd like to book a lesson or have any questions, please feel free to get in
       }
     });
   </script>
+<!-- ======= Facebook Review Modal (mobile only) ======= -->
+<style>
+  @media (max-width: 900px){
+    .fb-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:99999}
+    .fb-modal.open{display:flex}
+    .fb-modal .backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55)}
+    .fb-modal .panel{
+      position:relative; z-index:1; width:min(94vw, 640px); height:min(80vh, 720px);
+      background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.35)
+    }
+    .fb-modal header{
+      display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+      padding:.65rem .9rem; background:#0071DF; color:#fff; font-weight:800
+    }
+    .fb-modal header .title{font-size:1rem}
+    .fb-modal header .actions{display:flex; gap:.5rem}
+    .fb-modal header .btn{
+      appearance:none; border:0; border-radius:10px; padding:.5rem .7rem; font-weight:800; color:#0071DF; background:#fff
+    }
+    .fb-modal header .btn.secondary{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.6)}
+    .fb-modal iframe{width:100%; height:calc(100% - 46px); border:0; display:block; background:#f5f6f7}
+  }
+</style>
+
+<div class="fb-modal" id="fbPostModal" aria-hidden="true" role="dialog" aria-label="Facebook post">
+  <div class="backdrop" data-close-fbmodal></div>
+  <div class="panel" role="document">
+    <header>
+      <div class="title">Facebook review</div>
+      <div class="actions">
+        <button class="btn secondary" id="fbOpenExternally" type="button">Open on Facebook</button>
+        <button class="btn" type="button" data-close-fbmodal>Close</button>
+      </div>
+    </header>
+    <iframe id="fbPostFrame" title="Facebook post"></iframe>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Build plugin URL for embedding a single post
+  function buildPluginURL(postURL){
+    const base = 'https://www.facebook.com/plugins/post.php';
+    const q = new URLSearchParams({
+      href: postURL,
+      show_text: 'true',
+      width: '500' // Facebook will make it responsive; width here is just a hint
+    });
+    return `${base}?${q.toString()}`;
+  }
+
+  const modal   = document.getElementById('fbPostModal');
+  const frame   = document.getElementById('fbPostFrame');
+  const openExt = document.getElementById('fbOpenExternally');
+
+  // Open modal with given review URL
+  function openReviewModal(url){
+    // Set iframe src to the embeddable plugin
+    frame.src = buildPluginURL(url);
+    openExt.onclick = () => { window.location.href = url; }; // fallback: leave site explicitly
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    // prevent background scroll
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+  }
+  function closeReviewModal(){
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    frame.src = 'about:blank';
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+  }
+
+  // Close triggers
+  modal.addEventListener('click', (e) => {
+    if (e.target.closest('[data-close-fbmodal]')) closeReviewModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('open')) closeReviewModal();
+  });
+
+  // Intercept review-link clicks on MOBILE ONLY
+  document.addEventListener('click', function(e){
+    const a = e.target.closest('.review-link');
+    if (!a) return;
+
+    const isMobile = window.matchMedia('(max-width: 900px)').matches;
+    if (!isMobile) {
+      // Desktop: keep your existing new-tab behavior
+      a.target = '_blank';
+      a.rel = 'noopener';
+      return;
+    }
+
+    // Mobile: open in on-site modal instead of navigating away
+    e.preventDefault();
+    openReviewModal(a.href);
+  }, { passive:false });
+})();
+</script>
+<!-- ======= /Facebook Review Modal ======= -->
 
 </body>
 </html>
+
