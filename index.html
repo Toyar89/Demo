@@ -197,53 +197,78 @@
     #reviews { scroll-margin-top: 120px; padding-top: 0px; }
     #contact { scroll-margin-top: 130px; padding-top: 64px; }
   }
-    /* Mobile: center the CTA buttons everywhere, including About */
-@media (max-width: 640px){
-  .cta{ justify-content: center !important; }
-  .about .cta{ justify-content: center !important; } /* override the old rule */
-}
-/* ====== MOBILE MENU ENHANCEMENT ====== */
-@media (max-width: 900px) {
-  .drawer {
-    width: min(96vw, 400px);             /* wider */
-    top: calc(var(--nav-h) + 8px);       /* small gap below navbar */
-    right: 2vw;                          /* small side gap */
-    border-radius: 18px;
-    background: #0071DF;                 /* blue background */
-    color: #fff;                         /* white text */
-    border: none;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
-    padding: 1rem 0.5rem;
-    text-align: center;
-    animation: slideDown 0.3s ease-out;
+
+  /* Mobile: center the CTA buttons everywhere, including About */
+  @media (max-width: 640px){
+    .cta{ justify-content: center !important; }
+    .about .cta{ justify-content: center !important; }
   }
 
-  /* Make the links bigger, bolder, and centered */
-  .drawer a {
-    display: block;
-    padding: 1rem;
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #fff;
-    text-decoration: none;
-    border-bottom: 1px solid rgba(255,255,255,0.25);
-    transition: background 0.25s ease, color 0.25s ease;
+  /* ====== MOBILE MENU ENHANCEMENT ====== */
+  @media (max-width: 900px) {
+    .drawer {
+      width: min(96vw, 400px);
+      top: calc(var(--nav-h) + 8px);
+      right: 2vw;
+      border-radius: 18px;
+      background: #0071DF;
+      color: #fff;
+      border: none;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+      padding: 1rem 0.5rem;
+      text-align: center;
+      animation: slideDown 0.3s ease-out;
+    }
+    .drawer a {
+      display: block;
+      padding: 1rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255,255,255,0.25);
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+    .drawer a:last-child { border-bottom: none; }
+    .drawer a:hover {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
   }
-  .drawer a:last-child { border-bottom: none; }
 
-  /* Hover and tap feedback */
-  .drawer a:hover {
-    background: rgba(255,255,255,0.15);
-    color: #fff;
+  /* ========= MOBILE SLIDER LAYOUT (≤900px) ========= */
+  @media (max-width: 900px){
+    .reviews-grid,
+    #carGrid {
+      position: relative;
+      overflow: hidden;
+      display: block; /* override grid for reviews on mobile */
+    }
+    .slide-wrap {
+      display: flex;
+      width: 100%;
+      transition: transform .28s ease;
+      will-change: transform;
+      touch-action: pan-y; /* allow vertical scrolling */
+    }
+    .slide {
+      flex: 0 0 100%;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    /* hide old pagers on mobile (we use swipe) */
+    .rev-pager,
+    .car-pager {
+      display: none !important;
+    }
   }
-
-  /* Simple open animation */
-  @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to   { opacity: 1; transform: translateY(0); }
+  @media (min-width: 901px){
+    .slide-wrap { transform: none !important; }
   }
-}
-
   </style>
 </head>
 <body>
@@ -500,19 +525,20 @@ If you'd like to book a lesson or have any questions, please feel free to get in
     ];
 
     (function initReviews(){
-      const perPage = 3; let page = 1;
-      const grid = document.getElementById("reviewsGrid");
-      const prevBtn = document.getElementById("revPrevPg");
-      const nextBtn = document.getElementById("revNextPg");
+      const perPageDesktop = 3;
+      const grid   = document.getElementById("reviewsGrid");
+      const prevBtn= document.getElementById("revPrevPg");
+      const nextBtn= document.getElementById("revNextPg");
       const pageInfo = document.getElementById("revPageInfo");
-      const sectionId = "reviews";
+      const mql = window.matchMedia("(max-width: 900px)");
       if(!grid || !prevBtn || !nextBtn || !pageInfo) return;
 
-      const totalPages = Math.max(1, Math.ceil(REVIEWS.length / perPage));
+      let page = 1;
+      const totalPagesDesktop = Math.max(1, Math.ceil(REVIEWS.length / perPageDesktop));
 
-      function render(){
-        const start = (page - 1) * perPage;
-        const items = REVIEWS.slice(start, start + perPage);
+      function renderDesktop(){
+        const start = (page - 1) * perPageDesktop;
+        const items = REVIEWS.slice(start, start + perPageDesktop);
         grid.innerHTML = items.map(r => `
           <article class="review-card">
             <header class="review-header"><span class="reviewer">${r.name}</span></header>
@@ -525,18 +551,74 @@ If you'd like to book a lesson or have any questions, please feel free to get in
             </a>
           </article>
         `).join("");
-        pageInfo.textContent = `Page ${page} of ${totalPages}`;
-        prevBtn.disabled = page <= 1; nextBtn.disabled = page >= totalPages;
+        pageInfo.textContent = `Page ${page} of ${totalPagesDesktop}`;
+        prevBtn.disabled = page <= 1; nextBtn.disabled = page >= totalPagesDesktop;
       }
 
-      function go(delta){ page = Math.min(Math.max(1, page + delta), Math.ceil(REVIEWS.length / perPage)); render(); scrollToSection(sectionId); }
-      prevBtn.addEventListener("click", () => go(-1));
-      nextBtn.addEventListener("click", () => go(1));
-      window.addEventListener("keydown", (e) => {
-        if (e.key === "ArrowLeft" && page > 1) go(-1);
-        if (e.key === "ArrowRight" && page < Math.ceil(REVIEWS.length/perPage)) go(1);
-      });
-      render();
+      // Mobile slider state
+      let slideIndex = 0; // 0..(REVIEWS.length-1)
+      let wrapEl = null;
+      let startX = 0, dx = 0, active = false;
+
+      function renderMobile(){
+        const slides = REVIEWS.map(r => `
+          <div class="slide">
+            <article class="review-card" style="margin:0;">
+              <header class="review-header"><span class="reviewer">${r.name}</span></header>
+              <p class="review-snippet">${r.text}</p>
+              <a class="review-link" href="${r.url}" target="_blank" rel="noopener">
+                <span class="fb-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.88 3.77-3.88 1.09 0 2.22.2 2.22.2v2.44h-1.25c-1.23 0-1.61.77-1.61 1.56V12h2.74l-.44 2.89h-2.3v6.99A10 10 0 0 0 22 12z"/></svg>
+                </span>
+                Read full review
+              </a>
+            </article>
+          </div>
+        `).join("");
+
+        grid.innerHTML = `<div class="slide-wrap">${slides}</div>`;
+        wrapEl = grid.querySelector('.slide-wrap');
+        goTo(slideIndex, false);
+
+        wrapEl.addEventListener('touchstart', e => {
+          active = true; startX = e.touches[0].clientX; dx = 0;
+        }, {passive:true});
+        wrapEl.addEventListener('touchmove', e => {
+          if (!active) return; dx = e.touches[0].clientX - startX;
+        }, {passive:true});
+        wrapEl.addEventListener('touchend', () => {
+          if (!active) return;
+          if (Math.abs(dx) > 40) {
+            if (dx < 0 && slideIndex < REVIEWS.length - 1) slideIndex++;
+            if (dx > 0 && slideIndex > 0) slideIndex--;
+          }
+          goTo(slideIndex);
+          active = false;
+        });
+      }
+
+      function goTo(i, animate=true){
+        slideIndex = Math.max(0, Math.min(i, REVIEWS.length - 1));
+        if (wrapEl){
+          if (!animate) wrapEl.style.transition = 'none';
+          wrapEl.style.transform = `translateX(${-slideIndex * 100}%)`;
+          if (!animate) requestAnimationFrame(() => { wrapEl.style.transition='transform .28s ease'; });
+        }
+      }
+
+      // Desktop pager buttons
+      prevBtn.addEventListener("click", () => { page = Math.max(1, page - 1); renderDesktop(); });
+      nextBtn.addEventListener("click", () => { page = Math.min(Math.ceil(REVIEWS.length / perPageDesktop), page + 1); renderDesktop(); });
+
+      function renderByMode(){
+        if (mql.matches){
+          slideIndex = 0; renderMobile();
+        } else {
+          page = 1; renderDesktop();
+        }
+      }
+      mql.addEventListener('change', renderByMode);
+      renderByMode();
     })();
 
     const CAR_PHOTOS = [
@@ -548,42 +630,89 @@ If you'd like to book a lesson or have any questions, please feel free to get in
     ];
 
     (function initCar(){
-      const perPage = 3; let page = 1;
-      const grid = document.getElementById("carGrid");
-      const prevBtn = document.getElementById("carPrevPg");
-      const nextBtn = document.getElementById("carNextPg");
+      const perPageDesktop = 3;
+      const grid   = document.getElementById("carGrid");
+      const prevBtn= document.getElementById("carPrevPg");
+      const nextBtn= document.getElementById("carNextPg");
       const pageInfo = document.getElementById("carPageInfo");
-      const sectionId = "mycar";
+      const mql = window.matchMedia("(max-width: 900px)");
       if(!grid || !prevBtn || !nextBtn || !pageInfo) return;
 
-      const totalPages = Math.max(1, Math.ceil(CAR_PHOTOS.length / perPage));
+      let page = 1;
+      const totalPagesDesktop = Math.max(1, Math.ceil(CAR_PHOTOS.length / perPageDesktop));
 
-      function render(){
-        const start = (page - 1) * perPage;
-        const items = CAR_PHOTOS.slice(start, start + perPage);
+      function renderDesktop(){
+        const start = (page - 1) * perPageDesktop;
+        const items = CAR_PHOTOS.slice(start, start + perPageDesktop);
         grid.innerHTML = items.map(p => `
           <figure class="car-card">
             <img class="car-media" src="${p.src}" alt="${p.alt || ''}">
           </figure>
         `).join("");
-        pageInfo.textContent = `Page ${page} of ${totalPages}`;
-        prevBtn.disabled = page <= 1; nextBtn.disabled = page >= totalPages;
+        pageInfo.textContent = `Page ${page} of ${totalPagesDesktop}`;
+        prevBtn.disabled = page <= 1; nextBtn.disabled = page >= totalPagesDesktop;
       }
 
-      function go(delta){ page = Math.min(Math.max(1, page + delta), Math.ceil(CAR_PHOTOS.length / perPage)); render(); scrollToSection(sectionId); }
-      prevBtn.addEventListener("click", () => go(-1));
-      nextBtn.addEventListener("click", () => go(1));
-      window.addEventListener("keydown", (e) => {
-        if (e.key === "ArrowLeft"  && page > 1) go(-1);
-        if (e.key === "ArrowRight" && page < Math.ceil(CAR_PHOTOS.length/perPage)) go(1);
-      });
-      render();
+      // Mobile slider state
+      let slideIndex = 0;
+      let wrapEl = null;
+      let startX = 0, dx = 0, active = false;
+
+      function renderMobile(){
+        const slides = CAR_PHOTOS.map(p => `
+          <div class="slide">
+            <figure class="car-card" style="border-width:1px;margin:0">
+              <img class="car-media" src="${p.src}" alt="${p.alt || ''}">
+            </figure>
+          </div>
+        `).join("");
+
+        grid.innerHTML = `<div class="slide-wrap">${slides}</div>`;
+        wrapEl = grid.querySelector('.slide-wrap');
+        goTo(slideIndex, false);
+
+        wrapEl.addEventListener('touchstart', e => {
+          active = true; startX = e.touches[0].clientX; dx = 0;
+        }, {passive:true});
+        wrapEl.addEventListener('touchmove', e => {
+          if (!active) return; dx = e.touches[0].clientX - startX;
+        }, {passive:true});
+        wrapEl.addEventListener('touchend', () => {
+          if (!active) return;
+          if (Math.abs(dx) > 40) {
+            if (dx < 0 && slideIndex < CAR_PHOTOS.length - 1) slideIndex++;
+            if (dx > 0 && slideIndex > 0) slideIndex--;
+          }
+          goTo(slideIndex);
+          active = false;
+        });
+      }
+
+      function goTo(i, animate=true){
+        slideIndex = Math.max(0, Math.min(i, CAR_PHOTOS.length - 1));
+        if (wrapEl){
+          if (!animate) wrapEl.style.transition = 'none';
+          wrapEl.style.transform = `translateX(${-slideIndex * 100}%)`;
+          if (!animate) requestAnimationFrame(() => { wrapEl.style.transition='transform .28s ease'; });
+        }
+      }
+
+      // Desktop pager buttons
+      prevBtn.addEventListener("click", () => { page = Math.max(1, page - 1); renderDesktop(); });
+      nextBtn.addEventListener("click", () => { page = Math.min(Math.ceil(CAR_PHOTOS.length / perPageDesktop), page + 1); renderDesktop(); });
+
+      function renderByMode(){
+        if (mql.matches){
+          slideIndex = 0; renderMobile();
+        } else {
+          page = 1; renderDesktop();
+        }
+      }
+      mql.addEventListener('change', renderByMode);
+      renderByMode();
     })();
   });
   </script>
 
 </body>
 </html>
-
-
-
