@@ -719,7 +719,38 @@ If you'd like to book a lesson or have any questions, please feel free to get in
   });
   </script>
 
+  <!-- ========= Back to site (mobile hint) + Mobile review-link fix ========= -->
+  <style>
+    /* Mobile-only hint appended to the review link text */
+    @media (max-width:900px){
+      .review-link::after{
+        content:" ↩ Back to site";
+        display:inline-block;
+        margin-left:6px;
+        font-weight:600;
+        font-size:.9rem;
+        opacity:.7;
+      }
+    }
+  </style>
+  <script>
+    // On mobile: open review links in the SAME tab (avoids Facebook app/webview trap)
+    // On desktop: keep opening in a new tab
+    document.addEventListener('click', function (e) {
+      const link = e.target.closest('.review-link');
+      if (!link) return;
+
+      const isMobile = window.matchMedia('(max-width: 900px)').matches;
+
+      if (isMobile) {
+        e.preventDefault();
+        window.location.href = link.href; // same-tab
+      } else {
+        link.target = '_blank';
+        link.rel = 'noopener';
+      }
+    });
+  </script>
+
 </body>
 </html>
-
-
