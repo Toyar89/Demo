@@ -118,6 +118,11 @@
   @media (max-width:640px){.reviews-sub{font-size:.9rem}}
   .reviews-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--gap);margin-top:.75rem}
   .review-card{grid-column:span 4;background:#fff;border:1px solid var(--line);border-radius:14px;padding:1rem;display:flex;flex-direction:column;gap:.6rem;min-height:220px}
+  .reviews .review-card{
+  border-color:#cbd5e1;   /* darker */
+  border-width:2px;       /* optional: a touch bolder */
+}
+  
   .review-header{display:flex;align-items:center;gap:.6rem;font-weight:800;color:var(--ink)}
   .review-snippet{color:var(--muted);margin:0;flex:1}
   .review-link{align-self:flex-start;display:inline-flex;align-items:center;gap:.45rem;text-decoration:none;font-weight:800;color:var(--accent)}
@@ -716,3 +721,4 @@ If you'd like to book a lesson or have any questions, please feel free to get in
 
 </body>
 </html>
+
