@@ -202,6 +202,47 @@
   .cta{ justify-content: center !important; }
   .about .cta{ justify-content: center !important; } /* override the old rule */
 }
+/* ====== MOBILE MENU ENHANCEMENT ====== */
+@media (max-width: 900px) {
+  .drawer {
+    width: min(96vw, 400px);             /* wider */
+    top: calc(var(--nav-h) + 8px);       /* small gap below navbar */
+    right: 2vw;                          /* small side gap */
+    border-radius: 18px;
+    background: #0071DF;                 /* blue background */
+    color: #fff;                         /* white text */
+    border: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    padding: 1rem 0.5rem;
+    text-align: center;
+    animation: slideDown 0.3s ease-out;
+  }
+
+  /* Make the links bigger, bolder, and centered */
+  .drawer a {
+    display: block;
+    padding: 1rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255,255,255,0.25);
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+  .drawer a:last-child { border-bottom: none; }
+
+  /* Hover and tap feedback */
+  .drawer a:hover {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+  }
+
+  /* Simple open animation */
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}
 
   </style>
 </head>
@@ -543,5 +584,6 @@ If you'd like to book a lesson or have any questions, please feel free to get in
 
 </body>
 </html>
+
 
 
