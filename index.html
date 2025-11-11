@@ -117,11 +117,7 @@
   .reviews-sub{font-weight:400;font-size:.95rem;color:var(--muted);line-height:1.35}
   @media (max-width:640px){.reviews-sub{font-size:.9rem}}
   .reviews-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--gap);margin-top:.75rem}
-  .review-card{grid-column:span 4;background:#fff;border:1px solid var(--line);border-radius:14px;padding:1rem;display:flex;flex-direction:column;gap:.6rem;min-height:220px}
-  .reviews .review-card{
-    border-color:#cbd5e1;
-    border-width:2px;
-  }
+  .review-card{grid-column:span 4;background:#fff;border:1.5px solid #cbd5e1;border-radius:14px;padding:1rem;display:flex;flex-direction:column;gap:.6rem;min-height:220px}
   .review-header{display:flex;align-items:center;gap:.6rem;font-weight:800;color:var(--ink)}
   .review-snippet{color:var(--muted);margin:0;flex:1}
   .review-link{align-self:flex-start;display:inline-flex;align-items:center;gap:.45rem;text-decoration:none;font-weight:800;color:var(--accent)}
@@ -718,8 +714,21 @@ If you'd like to book a lesson or have any questions, please feel free to get in
   });
   </script>
 
-  <!-- ======= FB Review Modal (mobile-safe) ======= -->
+  <!-- ========= Facebook review: mobile-friendly modal ========= -->
   <style>
+    /* Small visual hint on mobile next to the review link text */
+    @media (max-width:900px){
+      .review-link::after{
+        content:" ↩ Back to site";
+        display:inline-block;
+        margin-left:6px;
+        font-weight:600;
+        font-size:.9rem;
+        opacity:.7;
+      }
+    }
+
+    /* Modal styles (mobile only) */
     @media (max-width: 900px){
       .fb-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:99999}
       .fb-modal.open{display:flex}
@@ -741,7 +750,7 @@ If you'd like to book a lesson or have any questions, please feel free to get in
       .fb-modal iframe{width:100%; height:calc(100% - 46px); border:0; display:block; background:#f5f6f7}
     }
 
-    /* Optional: back-to-site pill if you ever link out */
+    /* Optional floating back button if you ever link out directly */
     .back-to-site {
       position: fixed; left: 12px; bottom: 12px; z-index: 99998;
       background:#0f172a; color:#fff; border-radius:9999px; padding:.55rem .9rem;
@@ -765,100 +774,110 @@ If you'd like to book a lesson or have any questions, please feel free to get in
 
   <script>
   (function(){
-    const mql = window.matchMedia('(max-width: 900px)');
-    const modal = document.getElementById('fbPostModal');
-    const frame = document.getElementById('fbPostFrame');
-    const openExt = document.getElementById('fbOpenExternally');
-
-    function buildPluginURL(postURL){
-      const base = 'https://www.facebook.com/plugins/post.php';
-      const q = new URLSearchParams({ href: postURL, show_text: 'true', width: '500' });
-      return `${base}?${q.toString()}`;
+    // Ensure we run after DOM is ready (we're already at the bottom, but just in case)
+    function onReady(fn){ 
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+      else fn();
     }
 
-    function openReviewModal(url){
-      frame.src = buildPluginURL(url);
-      openExt.onclick = () => { window.location.href = url; };
-      modal.classList.add('open');
-      modal.setAttribute('aria-hidden', 'false');
-      document.documentElement.style.overflow = 'hidden';
-      document.body.style.overflow = 'hidden';
-    }
-    function closeReviewModal(){
-      modal.classList.remove('open');
-      modal.setAttribute('aria-hidden', 'true');
-      frame.src = 'about:blank';
-      document.documentElement.style.overflow = '';
-      document.body.style.overflow = '';
-    }
+    onReady(function(){
+      const mql = window.matchMedia('(max-width: 900px)');
+      const modal = document.getElementById('fbPostModal');
+      const frame = document.getElementById('fbPostFrame');
+      const openExt = document.getElementById('fbOpenExternally');
 
-    // Close triggers
-    modal.addEventListener('click', (e) => {
-      if (e.target.closest('[data-close-fbmodal]')) { e.preventDefault(); closeReviewModal(); }
-    }, {passive:false});
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && modal.classList.contains('open')) closeReviewModal();
-    });
+      if (!modal || !frame || !openExt) return;
 
-    // Rewire .review-link anchors for mobile
-    function wireReviewLinks(){
-      const links = document.querySelectorAll('.review-link');
-      links.forEach(a => {
-        const real = a.getAttribute('href');
-        if (!real) return;
-        a.dataset.reviewHref = real;
+      function buildPluginURL(postURL){
+        const base = 'https://www.facebook.com/plugins/post.php';
+        const q = new URLSearchParams({ href: postURL, show_text: 'true', width: '500' });
+        return `${base}?${q.toString()}`;
+      }
 
-        if (mql.matches){
-          // MOBILE: neutralise and intercept
-          a.setAttribute('role', 'button');
-          a.removeAttribute('target');
-          a.removeAttribute('rel');
-          a.setAttribute('href', '#');
-        } else {
-          // DESKTOP: keep new-tab
-          a.setAttribute('href', real);
-          a.setAttribute('target', '_blank');
-          a.setAttribute('rel', 'noopener');
-        }
+      function openReviewModal(url){
+        frame.src = buildPluginURL(url);
+        openExt.onclick = () => { window.location.href = url; };
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden';
+      }
+      function closeReviewModal(){
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        frame.src = 'about:blank';
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
+      }
 
-        // Remove old handlers before adding
-        if (a._wired) a.removeEventListener('click', a._wired, {capture:true});
-        if (a._wiredTouch) a.removeEventListener('touchend', a._wiredTouch, {capture:true});
-
-        const clickHandler = function(e){
-          if (!mql.matches) return; // desktop: allow default
-          e.preventDefault();
-          e.stopImmediatePropagation();
-          e.stopPropagation();
-          const url = a.dataset.reviewHref;
-          if (url) openReviewModal(url);
-        };
-        const touchHandler = function(e){
-          if (!mql.matches) return;
-          e.preventDefault();
-          e.stopImmediatePropagation();
-          e.stopPropagation();
-        };
-
-        a.addEventListener('click', clickHandler, {capture:true, passive:false});
-        a.addEventListener('touchend', touchHandler, {capture:true, passive:false});
-        a._wired = clickHandler;
-        a._wiredTouch = touchHandler;
+      // Close by clicking backdrop or Close button
+      modal.addEventListener('click', (e) => {
+        if (e.target.closest('[data-close-fbmodal]')) { e.preventDefault(); closeReviewModal(); }
+      }, {passive:false});
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('open')) closeReviewModal();
       });
-    }
 
-    wireReviewLinks();
-    mql.addEventListener('change', wireReviewLinks);
+      // Wire links robustly to support your dynamic renders
+      function wireReviewLinks(){
+        document.querySelectorAll('.review-link').forEach(a => {
+          const real = a.getAttribute('href');
+          if (!real) return;
+          a.dataset.reviewHref = real;
 
-    // Auto-rewire if your reviews grid re-renders
-    const reviewsRoot = document.getElementById('reviews');
-    if (reviewsRoot){
-      const mo = new MutationObserver(() => wireReviewLinks());
-      mo.observe(reviewsRoot, { childList: true, subtree: true });
-    }
+          if (mql.matches){
+            // MOBILE: neutralise normal navigation; show modal instead
+            a.setAttribute('role', 'button');
+            a.removeAttribute('target');
+            a.removeAttribute('rel');
+            a.setAttribute('href', '#');
+
+            // Remove old listeners if re-wiring
+            if (a._wired) a.removeEventListener('click', a._wired, {capture:true});
+            if (a._wiredTouch) a.removeEventListener('touchend', a._wiredTouch, {capture:true});
+
+            const clickHandler = function(e){
+              e.preventDefault();
+              e.stopImmediatePropagation();
+              e.stopPropagation();
+              openReviewModal(a.dataset.reviewHref);
+            };
+            const touchHandler = function(e){
+              e.preventDefault();
+              e.stopImmediatePropagation();
+              e.stopPropagation();
+            };
+            a.addEventListener('click', clickHandler, {capture:true, passive:false});
+            a.addEventListener('touchend', touchHandler, {capture:true, passive:false});
+            a._wired = clickHandler;
+            a._wiredTouch = touchHandler;
+          } else {
+            // DESKTOP: normal new-tab behaviour
+            a.setAttribute('href', real);
+            a.setAttribute('target', '_blank');
+            a.setAttribute('rel', 'noopener');
+            if (a._wired) a.removeEventListener('click', a._wired, {capture:true});
+            if (a._wiredTouch) a.removeEventListener('touchend', a._wiredTouch, {capture:true});
+            a._wired = null; a._wiredTouch = null;
+          }
+        });
+      }
+
+      // Initial wire-up
+      wireReviewLinks();
+      // Re-wire on viewport change (e.g. rotate phone)
+      mql.addEventListener('change', wireReviewLinks);
+
+      // Auto re-wire when #reviews changes (your pager/render functions)
+      const reviewsRoot = document.getElementById('reviews');
+      if (reviewsRoot){
+        const mo = new MutationObserver(() => wireReviewLinks());
+        mo.observe(reviewsRoot, { childList: true, subtree: true });
+      }
+    });
   })();
   </script>
-  <!-- ======= /FB Review Modal ======= -->
+  <!-- ========= /Facebook review: mobile-friendly modal ========= -->
 
 </body>
 </html>
