@@ -292,6 +292,14 @@
     content:""; position:absolute; left:0; right:0; bottom:0; height:2.4em;
     background:linear-gradient(to bottom, rgba(255,255,255,0), #fff);
   }
+
+  /* === Desktop-only nudge for about.png (moves image up slightly) === */
+  @media (min-width: 981px){
+    .about .card img.main-img{
+      transform: translateY(-14px); /* tweak: -8px, -12px, -20px, etc. */
+      will-change: transform;
+    }
+  }
   </style>
 </head>
 <body>
@@ -741,5 +749,3 @@ If you'd like to book a lesson or have any questions, please feel free to get in
   </script>
 </body>
 </html>
-
-
