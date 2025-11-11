@@ -107,7 +107,10 @@
 
   .pricing{padding-block:clamp(2rem,7vw,4rem);border-top:1px solid var(--line);text-align:center}
   .plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,360px));gap:var(--gap);justify-content:center}
-  .plan{border:2px solid var(--line);border-radius:14px;background:#fff;padding:1.25rem;text-align:center}
+  .plan{
+    border:2px solid var(--line); /* thicker border */
+    border-radius:14px;background:#fff;padding:1.25rem;text-align:center
+  }
   .plan .price{font-weight:900;font-size:1.6rem;margin:.2rem 0 .8rem}
   .plan ul{list-style:none;margin:.4rem auto 1rem;padding:0;text-align:center;color:var(--muted)}
   .plan .btn{display:inline-flex;margin-inline:auto;margin-top:.25rem}
@@ -117,11 +120,11 @@
   .reviews-sub{font-weight:400;font-size:.95rem;color:var(--muted);line-height:1.35}
   @media (max-width:640px){.reviews-sub{font-size:.9rem}}
   .reviews-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--gap);margin-top:.75rem}
-  .review-card{grid-column:span 4;background:#fff;border:1.5px solid #cbd5e1;border-radius:14px;padding:1rem;display:flex;flex-direction:column;gap:.6rem;min-height:220px}
+  .review-card{grid-column:span 4;background:#fff;border:1px solid var(--line);border-radius:14px;padding:1rem;display:flex;flex-direction:column;gap:.6rem;min-height:220px}
+  /* slightly darker & thicker review borders */
+  .reviews .review-card{border-color:#cbd5e1;border-width:2px}
   .review-header{display:flex;align-items:center;gap:.6rem;font-weight:800;color:var(--ink)}
   .review-snippet{color:var(--muted);margin:0;flex:1}
-  .review-link{align-self:flex-start;display:inline-flex;align-items:center;gap:.45rem;text-decoration:none;font-weight:800;color:var(--accent)}
-  .review-link:hover{color:var(--accent-2)}
   .fb-icon{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#1877F2;flex:0 0 18px}
   .fb-icon svg{width:11px;height:11px;fill:#fff}
   .rev-pager{display:flex;align-items:center;justify-content:center;gap:1rem;margin:1rem 0 2.25rem}
@@ -133,7 +136,10 @@
   .car-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--gap);margin-top:.75rem}
   .car-spec-intro{font-weight:800;font-size:1.05rem;color:var(--ink);margin:.25rem 0 .4rem}
   .car-spec-list{margin:.1rem 0 1rem;color:var(--muted)}
-  .car-card{grid-column:span 4;background:#fff;border:0px solid var(--line);border-radius:14px;overflow:hidden;display:flex;align-items:stretch;justify-content:center}
+  .car-card{
+    grid-column:span 4;background:#fff;border:none; /* removed border */
+    border-radius:14px;overflow:hidden;display:flex;align-items:stretch;justify-content:center
+  }
   .car-card .car-media{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
   @media (max-width:1000px){.car-card{grid-column:span 6}}
   @media (max-width:640px){.car-card{grid-column:1/-1}}
@@ -268,6 +274,23 @@
   }
   @media (min-width: 901px){
     .slide-wrap { transform: none !important; }
+  }
+
+  /* ---- Expandable reviews ---- */
+  .review-actions{display:flex;align-items:center;gap:.8rem;margin-top:.25rem}
+  .review-toggle{
+    appearance:none;background:none;border:0;color:var(--accent);font-weight:800;
+    cursor:pointer;padding:0;display:inline-flex;align-items:center;gap:.45rem
+  }
+  .review-toggle:hover{color:var(--accent-2)}
+  .review-ext{font-weight:700;color:#334155;text-decoration:underline}
+  .review-card.collapsed .review-snippet{
+    max-height: 13.2em; /* ~8 lines */
+    overflow:hidden; position:relative;
+  }
+  .review-card.collapsed .review-snippet::after{
+    content:""; position:absolute; left:0; right:0; bottom:0; height:2.4em;
+    background:linear-gradient(to bottom, rgba(255,255,255,0), #fff);
   }
   </style>
 </head>
@@ -511,7 +534,7 @@ If you'd like to book a lesson or have any questions, please feel free to get in
 
     const REVIEWS = [
       { name: "Tracy Beglin - September 2025",
-        text: "Gary is an excellent instructor. I was so nervous as I had never driven a car before and was a complete beginner. Gary was really patient and didnt make me do anything I wasn't comfortable with. He explained everything well so that I would remember it.",
+        text: "Gary is an excellent instructor. I was so nervous as I had never driven a car before and was a complete beginner. Gary was really patient and didnt make me do anything I wasn't comfortable with. He explained everything well so that I would remember it. We had a lot of laughs which helped to ease the nerves I had. I never thought I would be able to learn to drive, and was delighted at passing first time. Thanks again Gary, I will miss the homemade soup and tablet",
         url: "https://www.facebook.com/tracy.beglin/posts/pfbid0XCWPnP4p8trVYDfEgXB1zjv8vv2skLbGpYTRomMqzfibYB6yASgEuStgrxGHxXsrl"
       },
       { name: "Maggie Ivanova - October 2025",
@@ -524,6 +547,7 @@ If you'd like to book a lesson or have any questions, please feel free to get in
       { name: "Hannah W.", text: "Kept me relaxed from the first lesson. Loads of useful tips and local test knowledge.", url: "https://facebook.com/" }
     ];
 
+    /* ====== Reviews: desktop collapsed + mobile swipe; mobile hides FB link ====== */
     (function initReviews(){
       const perPageDesktop = 3;
       const grid   = document.getElementById("reviewsGrid");
@@ -534,59 +558,47 @@ If you'd like to book a lesson or have any questions, please feel free to get in
       if(!grid || !prevBtn || !nextBtn || !pageInfo) return;
 
       let page = 1;
-      const totalPagesDesktop = Math.max(1, Math.ceil(REVIEWS.length / perPageDesktop));
 
-      function renderDesktop(){
-        const start = (page - 1) * perPageDesktop;
-        const items = REVIEWS.slice(start, start + perPageDesktop);
-        grid.innerHTML = items.map(r => `
-          <article class="review-card">
+      // card builder: mobile => no FB link; desktop => has FB link
+      function cardHTML(r, idx, mobile){
+        const base = `
+          <article class="review-card collapsed" data-idx="${idx}">
             <header class="review-header"><span class="reviewer">${r.name}</span></header>
             <p class="review-snippet">${r.text}</p>
-            <a class="review-link" href="${r.url}" target="_blank" rel="noopener">
-              <span class="fb-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.88 3.77-3.88 1.09 0 2.22.2 2.22.2v2.44h-1.25c-1.23 0-1.61.77-1.61 1.56V12h2.74l-.44 2.89h-2.3v6.99A10 10 0 0 0 22 12z"/></svg>
-              </span>
-              Read full review
-            </a>
+            <div class="review-actions">
+              <button class="review-toggle" type="button" aria-expanded="false">Read more</button>
+              ${mobile ? '' : `<a class="review-ext" href="${r.url}" target="_blank" rel="noopener">View on Facebook</a>`}
+            </div>
           </article>
-        `).join("");
-        pageInfo.textContent = `Page ${page} of ${totalPagesDesktop}`;
-        prevBtn.disabled = page <= 1; nextBtn.disabled = page >= totalPagesDesktop;
+        `;
+        return base;
       }
 
-      // Mobile slider state
-      let slideIndex = 0; // 0..(REVIEWS.length-1)
+      function renderDesktop(){
+        const totalPages = Math.max(1, Math.ceil(REVIEWS.length / perPageDesktop));
+        const start = (page - 1) * perPageDesktop;
+        const items = REVIEWS.slice(start, start + perPageDesktop);
+        grid.innerHTML = items.map((r,i) => cardHTML(r, start+i, false)).join("");
+        pageInfo.textContent = `Page ${page} of ${totalPages}`;
+        prevBtn.disabled = page <= 1;
+        nextBtn.disabled = page >= totalPages;
+      }
+
+      // Mobile slider
+      let slideIndex = 0;
       let wrapEl = null;
       let startX = 0, dx = 0, active = false;
 
       function renderMobile(){
-        const slides = REVIEWS.map(r => `
-          <div class="slide">
-            <article class="review-card" style="margin:0;">
-              <header class="review-header"><span class="reviewer">${r.name}</span></header>
-              <p class="review-snippet">${r.text}</p>
-              <a class="review-link" href="${r.url}" target="_blank" rel="noopener">
-                <span class="fb-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.88 3.77-3.88 1.09 0 2.22.2 2.22.2v2.44h-1.25c-1.23 0-1.61.77-1.61 1.56V12h2.74l-.44 2.89h-2.3v6.99A10 10 0 0 0 22 12z"/></svg>
-                </span>
-                Read full review
-              </a>
-            </article>
-          </div>
-        `).join("");
-
+        const slides = REVIEWS.map((r, i) => `<div class="slide">${cardHTML(r, i, true)}</div>`).join("");
         grid.innerHTML = `<div class="slide-wrap">${slides}</div>`;
         wrapEl = grid.querySelector('.slide-wrap');
         goTo(slideIndex, false);
 
-        wrapEl.addEventListener('touchstart', e => {
-          active = true; startX = e.touches[0].clientX; dx = 0;
-        }, {passive:true});
-        wrapEl.addEventListener('touchmove', e => {
-          if (!active) return; dx = e.touches[0].clientX - startX;
-        }, {passive:true});
-        wrapEl.addEventListener('touchend', () => {
+        // Swipe
+        wrapEl.addEventListener('touchstart', e => { active = true; startX = e.touches[0].clientX; dx = 0; }, {passive:true});
+        wrapEl.addEventListener('touchmove',  e => { if (!active) return; dx = e.touches[0].clientX - startX; }, {passive:true});
+        wrapEl.addEventListener('touchend',  () => {
           if (!active) return;
           if (Math.abs(dx) > 40) {
             if (dx < 0 && slideIndex < REVIEWS.length - 1) slideIndex++;
@@ -606,9 +618,22 @@ If you'd like to book a lesson or have any questions, please feel free to get in
         }
       }
 
-      // Desktop pager buttons
+      // Desktop pager
       prevBtn.addEventListener("click", () => { page = Math.max(1, page - 1); renderDesktop(); });
-      nextBtn.addEventListener("click", () => { page = Math.min(Math.ceil(REVIEWS.length / perPageDesktop), page + 1); renderDesktop(); });
+      nextBtn.addEventListener("click", () => {
+        const totalPages = Math.max(1, Math.ceil(REVIEWS.length / perPageDesktop));
+        page = Math.min(totalPages, page + 1); renderDesktop();
+      });
+
+      // ONE event listener handles Read more/less for BOTH modes
+      grid.addEventListener('click', (e) => {
+        const btn = e.target.closest('.review-toggle'); if (!btn) return;
+        const card = btn.closest('.review-card'); if (!card) return;
+        const isCollapsed = card.classList.toggle('collapsed');
+        const expanded = !isCollapsed;
+        btn.textContent = expanded ? 'Read less' : 'Read more';
+        btn.setAttribute('aria-expanded', String(expanded));
+      });
 
       function renderByMode(){
         if (mql.matches){
@@ -621,6 +646,7 @@ If you'd like to book a lesson or have any questions, please feel free to get in
       renderByMode();
     })();
 
+    /* ===== Car: desktop pager + mobile swipe ===== */
     const CAR_PHOTOS = [
       { src: "images/car-1.png", alt:"Gary's car 1" },
       { src: "images/car-2.png", alt:"Gary's car 2" },
@@ -653,7 +679,7 @@ If you'd like to book a lesson or have any questions, please feel free to get in
         prevBtn.disabled = page <= 1; nextBtn.disabled = page >= totalPagesDesktop;
       }
 
-      // Mobile slider state
+      // Mobile slider
       let slideIndex = 0;
       let wrapEl = null;
       let startX = 0, dx = 0, active = false;
@@ -661,7 +687,7 @@ If you'd like to book a lesson or have any questions, please feel free to get in
       function renderMobile(){
         const slides = CAR_PHOTOS.map(p => `
           <div class="slide">
-            <figure class="car-card" style="border-width:1px;margin:0">
+            <figure class="car-card" style="margin:0">
               <img class="car-media" src="${p.src}" alt="${p.alt || ''}">
             </figure>
           </div>
@@ -713,172 +739,5 @@ If you'd like to book a lesson or have any questions, please feel free to get in
     })();
   });
   </script>
-
-  <!-- ========= Facebook review: mobile-friendly modal ========= -->
-  <style>
-    /* Small visual hint on mobile next to the review link text */
-    @media (max-width:900px){
-      .review-link::after{
-        content:" ↩ Back to site";
-        display:inline-block;
-        margin-left:6px;
-        font-weight:600;
-        font-size:.9rem;
-        opacity:.7;
-      }
-    }
-
-    /* Modal styles (mobile only) */
-    @media (max-width: 900px){
-      .fb-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:99999}
-      .fb-modal.open{display:flex}
-      .fb-modal .backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55)}
-      .fb-modal .panel{
-        position:relative; z-index:1; width:min(94vw, 640px); height:min(80vh, 720px);
-        background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.35)
-      }
-      .fb-modal header{
-        display:flex; align-items:center; justify-content:space-between; gap:.5rem;
-        padding:.65rem .9rem; background:#0071DF; color:#fff; font-weight:800
-      }
-      .fb-modal header .title{font-size:1rem}
-      .fb-modal header .actions{display:flex; gap:.5rem}
-      .fb-modal header .btn{
-        appearance:none; border:0; border-radius:10px; padding:.5rem .7rem; font-weight:800; color:#0071DF; background:#fff
-      }
-      .fb-modal header .btn.secondary{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.6)}
-      .fb-modal iframe{width:100%; height:calc(100% - 46px); border:0; display:block; background:#f5f6f7}
-    }
-
-    /* Optional floating back button if you ever link out directly */
-    .back-to-site {
-      position: fixed; left: 12px; bottom: 12px; z-index: 99998;
-      background:#0f172a; color:#fff; border-radius:9999px; padding:.55rem .9rem;
-      font-weight:800; text-decoration:none; box-shadow:0 8px 24px rgba(0,0,0,.25)
-    }
-  </style>
-
-  <div class="fb-modal" id="fbPostModal" aria-hidden="true" role="dialog" aria-label="Facebook post">
-    <div class="backdrop" data-close-fbmodal></div>
-    <div class="panel" role="document">
-      <header>
-        <div class="title">Facebook review</div>
-        <div class="actions">
-          <button class="btn secondary" id="fbOpenExternally" type="button">Open on Facebook</button>
-          <button class="btn" type="button" data-close-fbmodal>Close</button>
-        </div>
-      </header>
-      <iframe id="fbPostFrame" title="Facebook post"></iframe>
-    </div>
-  </div>
-
-  <script>
-  (function(){
-    // Ensure we run after DOM is ready (we're already at the bottom, but just in case)
-    function onReady(fn){ 
-      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
-      else fn();
-    }
-
-    onReady(function(){
-      const mql = window.matchMedia('(max-width: 900px)');
-      const modal = document.getElementById('fbPostModal');
-      const frame = document.getElementById('fbPostFrame');
-      const openExt = document.getElementById('fbOpenExternally');
-
-      if (!modal || !frame || !openExt) return;
-
-      function buildPluginURL(postURL){
-        const base = 'https://www.facebook.com/plugins/post.php';
-        const q = new URLSearchParams({ href: postURL, show_text: 'true', width: '500' });
-        return `${base}?${q.toString()}`;
-      }
-
-      function openReviewModal(url){
-        frame.src = buildPluginURL(url);
-        openExt.onclick = () => { window.location.href = url; };
-        modal.classList.add('open');
-        modal.setAttribute('aria-hidden', 'false');
-        document.documentElement.style.overflow = 'hidden';
-        document.body.style.overflow = 'hidden';
-      }
-      function closeReviewModal(){
-        modal.classList.remove('open');
-        modal.setAttribute('aria-hidden', 'true');
-        frame.src = 'about:blank';
-        document.documentElement.style.overflow = '';
-        document.body.style.overflow = '';
-      }
-
-      // Close by clicking backdrop or Close button
-      modal.addEventListener('click', (e) => {
-        if (e.target.closest('[data-close-fbmodal]')) { e.preventDefault(); closeReviewModal(); }
-      }, {passive:false});
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('open')) closeReviewModal();
-      });
-
-      // Wire links robustly to support your dynamic renders
-      function wireReviewLinks(){
-        document.querySelectorAll('.review-link').forEach(a => {
-          const real = a.getAttribute('href');
-          if (!real) return;
-          a.dataset.reviewHref = real;
-
-          if (mql.matches){
-            // MOBILE: neutralise normal navigation; show modal instead
-            a.setAttribute('role', 'button');
-            a.removeAttribute('target');
-            a.removeAttribute('rel');
-            a.setAttribute('href', '#');
-
-            // Remove old listeners if re-wiring
-            if (a._wired) a.removeEventListener('click', a._wired, {capture:true});
-            if (a._wiredTouch) a.removeEventListener('touchend', a._wiredTouch, {capture:true});
-
-            const clickHandler = function(e){
-              e.preventDefault();
-              e.stopImmediatePropagation();
-              e.stopPropagation();
-              openReviewModal(a.dataset.reviewHref);
-            };
-            const touchHandler = function(e){
-              e.preventDefault();
-              e.stopImmediatePropagation();
-              e.stopPropagation();
-            };
-            a.addEventListener('click', clickHandler, {capture:true, passive:false});
-            a.addEventListener('touchend', touchHandler, {capture:true, passive:false});
-            a._wired = clickHandler;
-            a._wiredTouch = touchHandler;
-          } else {
-            // DESKTOP: normal new-tab behaviour
-            a.setAttribute('href', real);
-            a.setAttribute('target', '_blank');
-            a.setAttribute('rel', 'noopener');
-            if (a._wired) a.removeEventListener('click', a._wired, {capture:true});
-            if (a._wiredTouch) a.removeEventListener('touchend', a._wiredTouch, {capture:true});
-            a._wired = null; a._wiredTouch = null;
-          }
-        });
-      }
-
-      // Initial wire-up
-      wireReviewLinks();
-      // Re-wire on viewport change (e.g. rotate phone)
-      mql.addEventListener('change', wireReviewLinks);
-
-      // Auto re-wire when #reviews changes (your pager/render functions)
-      const reviewsRoot = document.getElementById('reviews');
-      if (reviewsRoot){
-        const mo = new MutationObserver(() => wireReviewLinks());
-        mo.observe(reviewsRoot, { childList: true, subtree: true });
-      }
-    });
-  })();
-  </script>
-  <!-- ========= /Facebook review: mobile-friendly modal ========= -->
-
 </body>
 </html>
-
